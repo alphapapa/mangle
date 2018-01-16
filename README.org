@@ -1,0 +1,70 @@
+* mangle
+
+=mangle= is a Bash script which is suitable for aliasing to =man=.  You use it the same way as =man=, but you can add extra words after the name of the man page, and the man page will be grepped for those words.  Matching terms are color-highlighted with =grep=, and context lines are shown around each match.
+
+When you don't type any extra words, it works the same as =man=, showing you the whole man page.
+
+** Examples
+
+#+BEGIN_EXAMPLE
+  $ mangle rsync --block-size
+              --preallocate           allocate dest files before writing
+          -n, --dry-run               perform a trial run with no changes made
+          -W, --whole-file            copy files whole (w/o delta-xfer algorithm)
+          -x, --one-file-system       don't cross filesystem boundaries
+          -B, --block-size=SIZE       force a fixed checksum block-size
+          -e, --rsh=COMMAND           specify the remote shell to use
+              --rsync-path=PROGRAM    specify the rsync to run on remote machine
+              --existing              skip creating new files on receiver
+              --ignore-existing       skip updating files that exist on receiver
+  --
+                This tells rsync to avoid transferring any file that is smaller than the specified SIZE, which can help in not transferring small, junk files.  See the --max-size option for a description of SIZE and other information.
+
+                Note that rsync versions prior to 3.1.0 did not allow --min-size=0.
+
+         -B, --block-size=BLOCKSIZE
+                This forces the block size used in rsync’s delta-transfer algorithm to a fixed value.  It is normally selected based on the size of each file being updated.  See the technical report for details.
+
+         -e, --rsh=COMMAND
+                This option allows you to choose an alternative remote shell program to use for communication between the local and remote copies of rsync. Typically, rsync is configured to use ssh by default, but you may prefer to use rsh
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+  $ mangle find -iname
+         -ilname pattern
+                Like -lname, but the match is case insensitive.  If the -L option or the -follow option is in effect, this test returns false unless the symbolic link is broken.
+
+
+         -iname pattern
+                Like -name, but the match is case insensitive.  For example, the patterns `fo*' and `F??' match the file names `Foo', `FOO', `foo', `fOo', etc.   In these patterns, unlike filename expansion by the shell, an initial '.' can
+                be matched by `*'.  That is, find -name *bar will match the file `.foobar'.   Please note that you should quote patterns as a matter of course, otherwise the shell will expand any wildcard characters in them.
+#+END_EXAMPLE
+
+Note that it correctly handles multi-word man page names:
+
+#+BEGIN_EXAMPLE
+  $ mangle git grep --cached
+                    [-A <post-context>] [-B <pre-context>] [-C <context>]
+                    [-W | --function-context]
+                    [-f <file>] [-e] <pattern>
+                    [--and|--or|--not|(|)|-e <pattern>...]
+                    [ [--[no-]exclude-standard] [--cached | --no-index | --untracked] | <tree>...]
+                    [--] [<pathspec>...]
+
+
+  DESCRIPTION
+  --
+         grep.fullName
+             If set to true, enable --full-name option by default.
+
+  OPTIONS
+         --cached
+             Instead of searching tracked files in the working tree, search blobs registered in the index file.
+
+         --no-index
+             Search files in the current directory that is not managed by Git.
+#+END_EXAMPLE
+
+** License
+
+GPLv3

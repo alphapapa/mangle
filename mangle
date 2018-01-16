@@ -1,0 +1,41 @@
+#!/bin/bash
+
+less_command='| less $less_no_init -aiF -Ps"Manual page\: $man_page (?ltline %lt?L/%L.:byte %bB?s/%s..? (END):?pB %pB\%..)"'
+
+# Get section
+if [[ $1 =~ [0-9]+ ]]
+then
+    section=$1
+    shift
+fi
+
+# Find the longest set of args that gets a man page
+man_page=("$@")
+while ! command man -w $(echo "${man_page[@]}" | tr " " "-") &>/dev/null
+do
+    patterns+=( ${man_page[-1]} )
+    unset man_page[-1]
+done
+
+# For some reason, using an array substitution in the prompt string in
+# less_command isn't working, so work around that by turning it into a
+# plain string
+man_page="${man_page[@]}"
+
+# Build grep command
+if [[ ${patterns[@]} ]]
+then
+    grep_command="| grep -i -C4 --color=always -- ${patterns[@]}"
+fi
+
+command="command man $section $man_page $grep_command"
+
+# Check screen and output sizes
+tty_lines=$(tput lines)
+output_lines=$(eval "$command" | wc -l)
+
+# If output < screen size, use less with -X
+[[ $output_lines -lt $tty_lines ]] && less_no_init="-X"
+
+# Display the page
+eval "$command $less_command"
