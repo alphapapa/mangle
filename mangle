@@ -25,7 +25,9 @@ man_page="${man_page[@]}"
 # Build grep command
 if [[ ${patterns[@]} ]]
 then
-    grep_command="| grep -i -C4 --color=always -- ${patterns[@]}"
+    patterns="${patterns[@]}"
+    patterns=${patterns// /|}
+    grep_command="| egrep -i -C4 --color=always -- $(printf "%q" "$patterns")"
 fi
 
 command="command man $section $man_page $grep_command"
